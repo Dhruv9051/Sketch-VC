@@ -128,35 +128,23 @@ const App = () => {
   };
 
   useEffect(() => {
-    const handleMessage = (message) => {
-      setLogs((prev) => [...prev, message]);
+  const onMessage = (message) => {
+    console.log("Incoming log:", message);
+    setLogs((prev) => [...prev, message]);
 
-      // Success Detection
-      if (message.includes("Upload completed")) {
-        setStatus("success");
-      }
+    // Handle success transition inside the listener without depending on 'status'
+    if (message.toLowerCase().includes("upload completed")) {
+      setTimeout(() => setStatus("success"), 2000);
+    }
+  };
 
-      // Private Repo Error Detection
-      if (
-        message.includes("Authentication failed") ||
-        message.includes("could not read Username")
-      ) {
-        setStatus("error");
-        setErrorDetails(
-          "Deployment failed. If this is a private repository, please make it Public in GitHub settings and click Redeploy.",
-        );
-      }
-
-      if (
-        message.toLowerCase().includes("upload completed") &&
-        status !== "success"
-      ) {
-        setTimeout(() => setStatus("success"), 1500);
-      }
-    };
-    socket.on("message", handleMessage);
-    return () => socket.off("message", handleMessage);
-  }, [status]);
+  socket.on("message", onMessage);
+  
+  // Clean up only on component unmount
+  return () => {
+    socket.off("message", onMessage);
+  };
+}, []);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col items-center justify-center p-4 font-sans selection:bg-blue-500/30">

@@ -206,6 +206,7 @@ io.on('connection', (socket) => {
     console.log('Socket connected:', socket.id);
     socket.on('subscribe', (channel) => {
         socket.join(channel);
+        console.log(`Socket ${socket.id} joined room: ${channel}`); 
         socket.emit('message', `[System] Joined channel: ${channel}`);
     });
 });
