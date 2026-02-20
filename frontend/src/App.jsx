@@ -38,21 +38,34 @@ const App = () => {
   useEffect(() => {
     if (!deploymentId) return;
 
+    const subscribeToLogs = () => {
+      console.log("Emitting subscribe for:", `logs:${deploymentId}`);
+      socket.emit("subscribe", `logs:${deploymentId}`);
+    };
+
+    // If already connected, subscribe immediately.
+    // Otherwise, wait for the connection event.
+    if (socket.connected) {
+      subscribeToLogs();
+    } else {
+      socket.on("connect", subscribeToLogs);
+    }
+
     const fetchLogs = async () => {
       try {
         const { data } = await axios.get(`${API_URL}/logs/${deploymentId}`);
         const previousLogs = data.logs.map((log) => log.log);
-        setLogs((prev) => {
-          const newLogs = [...prev, ...previousLogs];
-          return [...new Set(newLogs)];
-        });
+        setLogs(previousLogs);
       } catch (error) {
         console.error("Failed to fetch history:", error);
       }
     };
 
     fetchLogs();
-    socket.emit("subscribe", `logs:${deploymentId}`);
+
+    return () => {
+      socket.off("connect", subscribeToLogs);
+    };
   }, [deploymentId]);
 
   const handleDeploy = async (e) => {
@@ -61,7 +74,7 @@ const App = () => {
 
     setStatus("deploying");
     setLogs([]);
-    setErrorDetails(null); // Reset errors
+    setErrorDetails(null);
     setProjectId("");
     setDeploymentId("");
 
@@ -91,17 +104,16 @@ const App = () => {
     }
   };
 
-  // NEW: Redeploy Function (Reuses existing Project ID)
+  // Redeploy Function (Reuses existing Project ID)
   const handleRedeploy = async () => {
     if (!projectId) return;
 
     setStatus("deploying");
     setLogs([]);
     setErrorDetails(null);
-    // Keep the same projectId, just get a new deploymentId
 
     try {
-      const deployRes = await axios.post("http://localhost:9000/deploy", {
+      const deployRes = await axios.post(`${API_URL}/deploy`, {
         projectId: projectId,
       });
 
@@ -123,7 +135,7 @@ const App = () => {
         setStatus("success");
       }
 
-      // NEW: Private Repo Error Detection
+      // Private Repo Error Detection
       if (
         message.includes("Authentication failed") ||
         message.includes("could not read Username")
@@ -142,10 +154,10 @@ const App = () => {
     <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col items-center justify-center p-4 font-sans selection:bg-blue-500/30">
       <div className="mb-10 text-center space-y-2">
         <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-500 bg-clip-text text-transparent">
-          Vercel Clone
+          Sketch VC
         </h1>
         <p className="text-slate-400 text-lg">
-          Deploy from GitHub to Edge in seconds.
+          Deploy from GitHub to Web in seconds.
         </p>
       </div>
 
@@ -180,7 +192,7 @@ const App = () => {
           </form>
         </div>
 
-        {/* NEW: Error Banner */}
+        {/* Error Banner */}
         {status === "error" && errorDetails && (
           <div className="bg-red-500/10 border-b border-red-500/20 p-4 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
@@ -252,15 +264,20 @@ const App = () => {
                   {logs.map((log, index) => (
                     <div
                       key={index}
-                      className="break-all hover:bg-white/5 py-0.5 px-2 -mx-2 rounded transition-colors flex"
+                      className="break-all hover:bg-white/5 py-0.5 px-2 -mx-2 rounded transition-colors flex items-start"
                     >
-                      <span className="text-slate-600 select-none mr-3 shrink-0">{`>`}</span>
+                      <span className="text-blue-500/70 select-none mr-3 shrink-0 font-mono text-xs mt-1">
+                        $
+                      </span>
                       <span
-                        className={
+                        className={`font-mono text-xs md:text-[13px] leading-relaxed italic tracking-tight ${
                           log.toLowerCase().includes("error")
-                            ? "text-red-400"
-                            : "text-slate-300"
-                        }
+                            ? "text-red-400 font-semibold"
+                            : "text-emerald-400/90"
+                        }`}
+                        style={{
+                          textShadow: "0 0 8px rgba(52, 211, 153, 0.2)",
+                        }}
                       >
                         {log}
                       </span>
@@ -272,7 +289,7 @@ const App = () => {
           </div>
         )}
 
-        {/* NEW: Redeploy Button (Only shows on Error) */}
+        {/* Redeploy Button (Only shows on Error) */}
         {status === "error" && (
           <div className="p-6 border-t border-slate-800 bg-slate-900/50 flex justify-end">
             <button
