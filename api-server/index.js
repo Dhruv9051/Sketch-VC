@@ -36,7 +36,7 @@ const kafka = new Kafka({
     clientId: 'api-server',
     brokers: process.env.KAFKA_BROKER,
     ssl: {
-        ca: [fs.readFileSync(path.join(__dirname, 'kafka.pem'), 'utf-8')]
+        ca: [process.env.KAFKA_CA_CERT]
     },
     sasl: {
         username: process.env.KAFKA_USERNAME,
@@ -199,6 +199,6 @@ io.on('connection', (socket) => {
     });
 });
 
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`API & Socket Server running on port ${PORT}`);
 });
