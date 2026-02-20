@@ -178,8 +178,8 @@ async function kafkaConsumer() {
                     values: [
                         {
                             event_id: uuidv4(),
-                            deployment_id: DEPLOYMENT_ID,
-                            log: log,
+                            deployment_id: activeDeploymentId,
+                            log: logText,
                         }
                     ],
                     format: 'JSONEachRow',
