@@ -18,7 +18,8 @@
 
 <br/>
 
-![Sketch VC Demo](https://placehold.co/900x450/0f172a/3b82f6?text=Sketch+VC+%E2%80%94+Deploy+Preview&font=inter)
+<img width="2560" height="1406" alt="image" src="https://github.com/user-attachments/assets/732ccca2-d39d-4933-9a71-a238e7a87ded" />
+
 
 </div>
 
