@@ -171,6 +171,7 @@ const App = () => {
       setLogs((prev) => [...prev, message]);
 
       // Handle success transition inside the listener without depending on 'status'
+
       if (message.toLowerCase().includes("upload completed")) {
         setTimeout(() => setStatus("success"), 2000);
       }
@@ -179,6 +180,7 @@ const App = () => {
     socket.on("message", onMessage);
 
     // Clean up only on component unmount
+
     return () => {
       socket.off("message", onMessage);
     };
@@ -190,16 +192,20 @@ const App = () => {
         <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-500 bg-clip-text text-transparent">
           Sketch VC
         </h1>
+
         <p className="text-slate-400 text-lg">
           Deploy from GitHub to Web in seconds.
         </p>
       </div>
+
       <div className="w-full max-w-3xl bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-xl shadow-2xl overflow-hidden ring-1 ring-white/10">
         {/* Input Section */}
+
         <div className="p-8 border-b border-slate-800 bg-slate-900/80">
           <form onSubmit={handleDeploy} className="flex gap-4">
             <div className="relative flex-1 group">
               <Github className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 group-focus-within:text-blue-400 transition-colors" />
+
               <input
                 type="url"
                 placeholder="https://github.com/username/repo"
@@ -209,6 +215,7 @@ const App = () => {
                 className="w-full bg-slate-950 border border-slate-700 rounded-lg py-4 pl-10 pr-4 text-slate-300 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all disabled:opacity-50"
               />
             </div>
+
             <button
               type="submit"
               disabled={
@@ -226,13 +233,16 @@ const App = () => {
         </div>
 
         {/* Error Banner */}
+
         {status === "error" && errorDetails && (
           <div className="bg-red-500/10 border-b border-red-500/20 p-4 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+
             <div className="space-y-1">
               <h3 className="text-red-400 font-medium text-sm">
                 Deployment Failed
               </h3>
+
               <p className="text-red-300/80 text-xs leading-relaxed">
                 {errorDetails}
               </p>
@@ -241,17 +251,21 @@ const App = () => {
         )}
 
         {/* Info Bar */}
+
         {projectId && (
           <div className="px-8 py-3 bg-slate-950/50 border-b border-slate-800 flex items-center gap-6 text-xs font-mono text-slate-500">
             <div className="flex items-center gap-2">
               <span className="uppercase tracking-wider">Project ID:</span>
+
               <span className="text-slate-300">
                 {projectId.split("-")[0]}...
               </span>
             </div>
+
             {deploymentId && (
               <div className="flex items-center gap-2">
                 <span className="uppercase tracking-wider">Deployment ID:</span>
+
                 <span className="text-slate-300">
                   {deploymentId.split("-")[0]}...
                 </span>
@@ -261,21 +275,25 @@ const App = () => {
         )}
 
         {/* Logs Section */}
+
         {status !== "idle" && (
           <div className="p-8">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 text-slate-400">
                 <Terminal className="w-4 h-4 text-blue-400" />
+
                 <span className="text-sm font-mono font-medium">
                   Build Logs
                 </span>
               </div>
+
               {status === "success" && (
                 <span className="px-3 py-1 bg-green-500/10 text-green-400 text-xs font-medium rounded-full flex items-center gap-1.5 border border-green-500/20">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Deployed
                 </span>
               )}
             </div>
+
             <div
               ref={logContainerRef}
               className="bg-[#0c0c0c] rounded-lg p-4 h-80 overflow-y-auto font-mono text-xs md:text-sm custom-scrollbar border border-slate-800/50"
@@ -283,6 +301,7 @@ const App = () => {
               {status === "error" ? (
                 <div className="flex flex-col items-center justify-center h-full text-red-400 gap-2">
                   <AlertCircle className="w-8 h-8" />
+
                   <span>{errorDetails}</span>
                 </div>
               ) : logs.length === 0 ? (
@@ -303,6 +322,7 @@ const App = () => {
                       <span className="text-blue-500/70 select-none mr-3 shrink-0 font-mono text-xs mt-1">
                         $
                       </span>
+
                       <span
                         className={`font-mono text-xs md:text-[13px] leading-relaxed italic tracking-tight ${
                           log.toLowerCase().includes("error")
@@ -324,6 +344,7 @@ const App = () => {
         )}
 
         {/* Redeploy Button (Only shows on Error) */}
+
         {status === "error" && (
           <div className="p-6 border-t border-slate-800 bg-slate-900/50 flex justify-end">
             <button
@@ -337,12 +358,14 @@ const App = () => {
         )}
 
         {/* Success Footer */}
+
         {status === "success" && (
           <div className="p-8 border-t border-slate-800 bg-gradient-to-b from-slate-900/50 to-slate-900/80">
             <div className="flex flex-col gap-3">
               <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
                 App Deployed To
               </span>
+
               <div className="flex items-center gap-3 bg-slate-950 border border-slate-700 rounded-lg p-3 group">
                 <a
                   href={deployedUrl}
@@ -352,6 +375,7 @@ const App = () => {
                 >
                   {deployedUrl}
                 </a>
+
                 <a
                   href={deployedUrl}
                   target="_blank"
@@ -365,7 +389,9 @@ const App = () => {
             <button
               onClick={() => {
                 setStatus("idle");
+
                 setLogs([]);
+
                 setRepoUrl("");
               }}
               className="mt-6 text-sm text-slate-500 hover:text-white transition-colors w-full text-center hover:bg-slate-800 py-2 rounded-lg"
