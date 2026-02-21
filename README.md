@@ -63,14 +63,15 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                          USER BROWSER                               │
-│                      (React Frontend)                                │
-└───────────────┬───────────────────────────────────────┬─────────────┘
-                │ HTTP REST + WebSocket                  │ HTTP (visit app)
-                ▼                                        ▼
-┌──────────────────────────┐              ┌──────────────────────────┐
+│                        (React Frontend)                             │
+└─────────────┬──────────────────────────────────────────┬────────────┘
+              │ HTTP REST             HTTP (visit app)   │ 
+              |    +                                     |
+              ▼ WebSocket                                ▼
+┌───────────────────────────┐              ┌──────────────────────────┐
 │       API SERVER          │              │     S3 REVERSE PROXY     │
 │  (Express + Socket.IO)    │              │       (Express)          │
-│  Port 9000                │              │  Port 8000               │
+│  Port 9000 (local)        │              │  Port 8000 (local)       │
 │                           │              │                          │
 │ • POST /project           │              │ • Slug → S3 routing      │
 │ • POST /deploy            │              │ • Referer-based fallback │
@@ -79,18 +80,18 @@
 └──────┬────────────────────┘                           │
        │ RunTask (AWS SDK)                              │ Proxy to S3
        ▼                                                ▼
-┌─────────────────┐                     ┌──────────────────────────────┐
+┌──────────────────┐                     ┌──────────────────────────────┐
 │  AWS ECS Fargate │                     │          AWS S3              │
 │  (Build Runner)  │                     │                              │
 │                  │                     │  __outputs/                  │
-│ Dockerized Node  │ ──── Uploads ──────▶│  └── {projectId}/           │
+  Dockerized Node   ──── Uploads ─────▶    └── {projectId}/           
 │ script.js        │     build assets    │      ├── index.html          │
 │                  │                     │      ├── assets/             │
 └──────┬───────────┘                     │      └── ...                 │
        │ Publishes logs                  └──────────────────────────────┘
        ▼
 ┌─────────────────────────────────────────────┐
-│              Apache Kafka                    │
+│              Apache Kafka                   │
 │         Topic: container-logs               │
 └──────────────────┬──────────────────────────┘
                    │ Consumed by API Server
