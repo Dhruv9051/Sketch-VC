@@ -14,7 +14,7 @@
 
 <br/>
 
-> Paste a GitHub URL → Get a live, publicly accessible web app. No configuration needed.
+> Paste a GitHub URL → Get a live, publicly accessible static web app. No configuration needed.
 
 <br/>
 
