@@ -26,7 +26,6 @@ const io = new Server(httpServer, {
     cors: {
         origin: '*',
         methods: ["GET", "POST"],
-        credentials: true
     },
     transports: ['websocket', 'polling']
 });
@@ -168,6 +167,7 @@ async function kafkaConsumer() {
             for (const message of messages) {
                 // Parse message
                 const payload = JSON.parse(message.value.toString());    
+                console.log('Kafka Payload:', payload);
                 // Extract ID
                 const activeDeploymentId = payload.DEPLOYMENT_ID || payload.deploymentId;
                 const logText = payload.log;
