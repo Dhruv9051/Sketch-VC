@@ -1,43 +1,61 @@
-const express = require('express')
-const httpproxy = require('http-proxy');
-require('dotenv').config()
+require('dotenv').config();
+const express = require('express');
+const httpProxy = require('http-proxy');
 const { PrismaClient } = require('@prisma/client');
 
 const app = express();
-
 const prisma = new PrismaClient();
 
 const BASE_PATH = process.env.BASE_PATH;
 const PORT = process.env.PORT || 8000;
 
-const proxy = httpproxy.createProxy();
+const proxy = httpProxy.createProxyServer({});
+
+// Handle proxy errors properly
+proxy.on('error', (err, req, res) => {
+  console.error('Proxy error:', err.message);
+  res.status(500).send('Proxy Error');
+});
 
 app.use(async (req, res) => {
-    // Get the slug from the first part of the path
-    const pathParts = req.url.split('/').filter(part => part !== '');
+  try {
+    const pathParts = req.url.split('/').filter(Boolean);
     const slug = pathParts[0];
 
-    if (!slug) return res.status(400).send('Project slug missing in path');
+    if (!slug) {
+      return res.status(400).send('Project slug missing');
+    }
 
     const project = await prisma.project.findFirst({
-        where: { subDomain: slug }
+      where: { subDomain: slug }
     });
 
-    if (!project) return res.status(404).send('Project not found');
+    if (!project) {
+      return res.status(404).send('Project not found');
+    }
 
-    // Point to the S3 bucket path
-    const resolvesTo = `${BASE_PATH}${project.id}`;
+    const target = `${BASE_PATH}${project.id}`;
 
-    // Rewrite the URL to remove the slug before sending to S3
+    // Remove slug from path
     req.url = req.url.replace(`/${slug}`, '') || '/index.html';
-    
-    if (req.url === '/') req.url = '/index.html';
 
-    console.log(`Resolving path ${slug} to ${resolvesTo}${req.url}`);
+    if (req.url === '/') {
+      req.url = '/index.html';
+    }
 
-    return proxy.web(req, res, { target: resolvesTo, changeOrigin: true });
+    console.log(`Proxying → ${target}${req.url}`);
+
+    proxy.web(req, res, {
+      target,
+      changeOrigin: true,
+    });
+
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`S3 Reverse Proxy running on port ${PORT}`);
+  console.log(`Proxy running on ${PORT}`);
 });
