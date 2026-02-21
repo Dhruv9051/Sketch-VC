@@ -1,6 +1,6 @@
 <div align="center">
 
-<img width="64" height="64" alt="Sketch VC Logo" src="https://github.com/user-attachments/assets/547f90b3-d052-4ad6-a3cb-9ad9801555e1"/>
+<img width="50" height="50" alt="Sketch VC Logo" src="https://github.com/user-attachments/assets/547f90b3-d052-4ad6-a3cb-9ad9801555e1"/>
 
 # Sketch VC
 
