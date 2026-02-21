@@ -223,14 +223,14 @@ A sleek React + Tailwind UI that provides a seamless deployment experience.
 
 **Real-Time Mechanism:**
 ```
-Browser                        API Server
-   │                               │
-   │── socket.emit("subscribe") ──▶│  join room "logs:{deploymentId}"
-   │                               │
-   │◀── socket.emit("message") ───│  relay Kafka messages
-   │                               │
-   │  (on reconnect)               │
-   │── GET /logs/:id ─────────────▶│  fetch historical logs from ClickHouse
+Browser                           API Server
+   │                                   │
+   │─── socket.emit("subscribe") ─────▶│  join room "logs:{deploymentId}"
+   │                                   │
+   │◀── socket.emit("message") ────────│  relay Kafka messages
+   │                                   │
+   │  (on reconnect)                   │
+   │─── GET /logs/:id ────────────────▶│  fetch historical logs from ClickHouse
 ```
 
 ---
