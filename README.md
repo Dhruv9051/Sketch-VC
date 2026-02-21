@@ -1,6 +1,6 @@
 <div align="center">
 
-# <img width="32" height="32" alt="image" src="https://github.com/user-attachments/assets/547f90b3-d052-4ad6-a3cb-9ad9801555e1"/> Sketch VC
+# <img width="32" height="32" alt="Sketch VC Logo" src="https://github.com/user-attachments/assets/547f90b3-d052-4ad6-a3cb-9ad9801555e1" style="vertical-align: middle; margin-right: 6px;"/> Sketch VC
 
 ### A self-hosted, cloud-native deployment platform — deploy any GitHub repo to the web in seconds.
 
