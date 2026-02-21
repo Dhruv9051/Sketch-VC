@@ -358,8 +358,8 @@ BASE_PATH=https://your-bucket.s3.amazonaws.com/__outputs/
 ### `frontend/.env`
 
 ```env
-VITE_API_URL=[http://localhost:9000](https://your-deployed-api-service)
-VITE_PROXY_URL=[http://localhost:9000](https://your-deployed-proxy-service)
+VITE_API_URL=https://your-deployed-api-service
+VITE_PROXY_URL=https://your-deployed-proxy-service
 ```
 
 ---
